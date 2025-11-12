@@ -3,11 +3,17 @@ package DAO;
 import model.Produto;
 import java.util.ArrayList;
 import java.sql.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 
 
 public class EstoqueDAO {
     public static ArrayList<Produto> estoqueLista = new ArrayList<>();
-
+    
+    
+    
+    
     public EstoqueDAO(){};
     
     
@@ -25,7 +31,7 @@ public class EstoqueDAO {
     }
     //add product to the db.
     public void InsertProdutoBD(Produto objeto) {
-        String sql = "INSERT INTO produtos(idprodutos,nomeproduto,descricaoproduto,quantidade,precoproduto, datadecadastro, datadeatualizacao) VALUES(?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO produtos(idprodutos, nomeproduto, descricaoproduto, quantidade, precoproduto, datadecadastro, datadeatualizacao) VALUES(?,?,?,?,?,?,?)";
 
 
         try {
@@ -42,8 +48,8 @@ public class EstoqueDAO {
             stmt.execute();
             stmt.close();
 
-        } catch (SQLException erro) {
-            throw new RuntimeException(erro);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
         //remove a product from db
@@ -54,7 +60,7 @@ public class EstoqueDAO {
              Statement stmt = conn.createStatement()){
             stmt.executeUpdate(sql);
         } catch (SQLException e) {
-            e.getMessage();
+            e.printStackTrace();
         }
         
     }
@@ -72,13 +78,37 @@ public class EstoqueDAO {
                 }
 
         } catch (SQLException e) {
-            e.getMessage();
+            e.printStackTrace();
         }
         return 1;
         }
     
     //read method
-    
+        public String lerDados(){
+            String sql = "SELECT * FROM produtos";
+            try(PreparedStatement stmt = this.getEstoqueConnection().prepareStatement(sql);
+                ResultSet result = stmt.executeQuery();) {
+                while (result.next()){
+                    int id = result.getInt("idprodutos");
+                    String name = result.getString("nomeproduto");
+                    String descricao = result.getString("descricaoproduto");
+                    int quantidade = result.getInt("quantidade");
+                    BigDecimal preco = result.getBigDecimal("precoproduto");
+                    Date dataDeCadastroDate = result.getDate("datadecadastro"); //get a date from the mySQL db
+                    LocalDate dataDeCadastro = dataDeCadastroDate.toLocalDate(); //convert to LocalDate to code
+                    Date dataDeAtualizacaoDate = result.getDate("datadecadastro"); //get a date from the mySQL db
+                    LocalDate dataDeAtualizacao = dataDeAtualizacaoDate.toLocalDate(); //convert to LocalDate to code
+                    
+                    
+                    
+                    
+                }
+                
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+            return "SELECT id, name, email FROM users";
+        }
     
     
     
@@ -102,7 +132,7 @@ public class EstoqueDAO {
             stmt.close();
 
         } catch (SQLException e) {
-            e.getMessage();
+            e.printStackTrace();
         }
     }
 }
