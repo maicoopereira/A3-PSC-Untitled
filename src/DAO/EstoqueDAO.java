@@ -12,11 +12,6 @@ public class EstoqueDAO {
     public static ArrayList<Produto> estoqueLista = new ArrayList<>();
     
     
-    
-    
-    public EstoqueDAO(){};
-    
-    
     //methods
     public Connection getEstoqueConnection() throws SQLException {     
         try {
@@ -53,15 +48,19 @@ public class EstoqueDAO {
         }
     }
         //remove a product from db
-    public void RemoveProdutoBD(Produto objeto) {
+    public String RemoveProdutoBD(Produto objeto) {       
         String sql = "DELETE FROM produtos WHERE produtoid="+objeto.getID;
-        int result;
+        
+        
         try (Connection conn = DataBaseConnection.getConnection();
              Statement stmt = conn.createStatement()){
+            
             stmt.executeUpdate(sql);
+            
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return "Produto removido com sucesso!";
         
     }
         
@@ -84,10 +83,14 @@ public class EstoqueDAO {
         }
     
     //read method
-        public String lerDados(){
+        public ArrayList gerarLista(){
+            
             String sql = "SELECT * FROM produtos";
+            estoqueLista.clear();
+            
             try(PreparedStatement stmt = this.getEstoqueConnection().prepareStatement(sql);
                 ResultSet result = stmt.executeQuery();) {
+                
                 while (result.next()){
                     int id = result.getInt("idprodutos");
                     String name = result.getString("nomeproduto");
@@ -98,16 +101,18 @@ public class EstoqueDAO {
                     LocalDate dataDeCadastro = dataDeCadastroDate.toLocalDate(); //convert to LocalDate to code
                     Date dataDeAtualizacaoDate = result.getDate("datadecadastro"); //get a date from the mySQL db
                     LocalDate dataDeAtualizacao = dataDeAtualizacaoDate.toLocalDate(); //convert to LocalDate to code
+                    Date dataDeValidadeDate = result.getDate("datadecadastro"); //get a date from the mySQL db
+                    LocalDate dataDeValidade = dataDeValidadeDate.toLocalDate(); //convert to LocalDate to code
                     
+                    Produto novoProduto = new Produto(id, name, descricao, quantidade, preco, dataDeCadastro, dataDeAtualizacao, dataDeValidade);
                     
-                    
-                    
+                    estoqueLista.add(novoProduto);                   
                 }
                 
             }catch (SQLException e){
                 e.printStackTrace();
             }
-            return "SELECT id, name, email FROM users";
+            return estoqueLista;
         }
     
     
