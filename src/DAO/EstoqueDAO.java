@@ -8,12 +8,13 @@ import java.time.LocalDate;
 
 
 
+
 public class EstoqueDAO {
     public static ArrayList<Produto> estoqueLista = new ArrayList<>();
     
     
     //methods
-    public Connection getEstoqueConnection() throws SQLException {     
+    public final Connection getEstoqueConnection() throws SQLException {     
         try {
             Connection conn = DataBaseConnection.getConnection();
             return conn;
@@ -25,76 +26,104 @@ public class EstoqueDAO {
         
     }
     //add product to the db.
-    public void InsertProdutoBD(Produto objeto) {
-        String sql = "INSERT INTO produtos(idprodutos, nomeproduto, descricaoproduto, quantidade, precoproduto, datadecadastro, datadeatualizacao) VALUES(?,?,?,?,?,?,?)";
+    public static void InsertProdutoBD(Produto objeto) {
+        String sql = "INSERT INTO produtos(idprodutos, nomeproduto, descricaoproduto, categoria, quantidade, precoproduto, datadecadastro, datadeatualizacao, datadevalidade) VALUES(?,?,?,?,?,?,?,?,?)";
 
 
-        try {
-            PreparedStatement stmt = this.getEstoqueConnection().prepareStatement(sql);
+        try (Connection conn = DataBaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)){
 
-            stmt.setInt(1, objeto.getId());
-            stmt.setString(2, objeto.getNome());
-            stmt.setString(3, objeto.getDescricao());
-            stmt.setInt(4, objeto.getQuantidade());
-            stmt.setBigDecimal(5, objeto.getPreco());
-            stmt.setTimestamp(6, Timestamp.valueOf(objeto.getDataDeCadastro()));
-            stmt.setTimestamp(7, Timestamp.valueOf(objeto.getDataDeAtualizacao()));
+            stmt.setInt(1, objeto.getIdProdutos());
+            stmt.setString(2, objeto.getNomeProduto());
+            stmt.setString(3, objeto.getDescricaoProduto());
+            stmt.setString(4, objeto.getCategoria());
+            stmt.setInt(5, objeto.getQuantidade());
+            stmt.setBigDecimal(6, objeto.getPrecoProduto());
+            stmt.setTimestamp(7, Timestamp.valueOf(objeto.getDataDeCadastro().atStartOfDay()));
+            stmt.setTimestamp(8, Timestamp.valueOf(objeto.getDataDeAtualizacao().atStartOfDay()));
+            stmt.setTimestamp(9, Timestamp.valueOf(objeto.getDataDeValidade().atStartOfDay()));
 
             stmt.execute();
-            stmt.close();
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
         //remove a product from db
-    public String RemoveProdutoBD(Produto objeto) {       
-        String sql = "DELETE FROM produtos WHERE produtoid="+objeto.getID;
-        
-        
+    public static String RemoveProdutoBD(Produto objeto) {       
+        String sql = "DELETE FROM produtos WHERE idprodutos="+objeto.getIdProdutos();
         try (Connection conn = DataBaseConnection.getConnection();
              Statement stmt = conn.createStatement()){
             
             stmt.executeUpdate(sql);
-            
+            return "Produto removido com sucesso!";
         } catch (SQLException e) {
-            e.printStackTrace();
+            return "Erro ao remover produto! " + e.getMessage();
         }
-        return "Produto removido com sucesso!";
         
+
+    }
+    public static String RemoveProdutoBD(int... args) {       
+        String sql;
+        for (int arg : args){
+            sql = "DELETE FROM produtos WHERE idprodutos=";
+            sql = sql + String.valueOf(arg);
+        
+            System.out.println(sql);
+            try (Connection conn = DataBaseConnection.getConnection();
+                 Statement stmt = conn.createStatement()){
+
+                stmt.executeUpdate(sql);
+            } catch (SQLException e) {
+                return "Erro ao remover produto! " + e.getMessage();
+            }
+
+        }
+        return "Produto removido com sucesso!"; 
     }
         
         //return the bigger id in the db.
-    public int maiorID() {
-            
-        String sql = "SELECT MAX(ProdutoId) AS max_id FROM produtos";
+    public static int maiorID() {
+
+        String sql = "SELECT MAX(idprodutos) AS max_id FROM produtos";
 
         try (Connection conn = DataBaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet result = stmt.executeQuery(sql)) {
-                if (result.next()) {
-                    return Integer.parseInt(result.getString("max_id"));
+             ResultSet result = stmt.executeQuery()) {
+
+            if (result.next()) {  // ESSENCIAL
+                int maxId = result.getInt("max_id");
+
+                // Se max_id for NULL, então a tabela está vazia
+                if (result.wasNull()) {
+                    return 1;
                 }
 
+                return maxId + 1;
+            }
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.getMessage();
+            
         }
         return 1;
+        
         }
     
     //read method
-        public ArrayList gerarLista(){
+        public static ArrayList gerarLista(){
             
             String sql = "SELECT * FROM produtos";
             estoqueLista.clear();
             
-            try(PreparedStatement stmt = this.getEstoqueConnection().prepareStatement(sql);
-                ResultSet result = stmt.executeQuery();) {
+            try(Connection conn = DataBaseConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet result = stmt.executeQuery(sql)) {
                 
                 while (result.next()){
                     int id = result.getInt("idprodutos");
-                    String name = result.getString("nomeproduto");
+                    String nome = result.getString("nomeproduto");
                     String descricao = result.getString("descricaoproduto");
+                    String categoria = result.getString("categoria");
                     int quantidade = result.getInt("quantidade");
                     BigDecimal preco = result.getBigDecimal("precoproduto");
                     Date dataDeCadastroDate = result.getDate("datadecadastro"); //get a date from the mySQL db
@@ -104,8 +133,8 @@ public class EstoqueDAO {
                     Date dataDeValidadeDate = result.getDate("datadecadastro"); //get a date from the mySQL db
                     LocalDate dataDeValidade = dataDeValidadeDate.toLocalDate(); //convert to LocalDate to code
                     
-                    Produto novoProduto = new Produto(id, name, descricao, quantidade, preco, dataDeCadastro, dataDeAtualizacao, dataDeValidade);
-                    
+                    Produto novoProduto = new Produto(id, quantidade, nome, descricao, categoria, preco, dataDeCadastro, dataDeAtualizacao, dataDeValidade);
+
                     estoqueLista.add(novoProduto);                   
                 }
                 
@@ -118,23 +147,22 @@ public class EstoqueDAO {
     
     
     //update method
-        public void atualizarDados(Produto objeto) {
+        public static void atualizarDados(Produto objeto) {
         
         String sql = "UPDATE produtos SET nomeproduto = ?, descricaoproduto = ?, quantidade = ?, precoproduto = ?, datadeatualizacao = ?, categoria = ?, datadevalidade = ? WHERE ProdutoId = ?";
 
         try (Connection conn = DataBaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
-            stmt.setString(1, objeto.getNome);
-            stmt.setString(2, objeto.getDescricao);
-            stmt.setInt(3, objeto.getQuantidade);
-            stmt.setBigDecimal(4, objeto.getPreco);
-            stmt.setDate(5, objeto.getDataDeAtualizacao);
-            stmt.setString(6, objeto.getCategoria);
-            stmt.setDate(7, objeto.getDataDeValidade);
+            stmt.setString(1, objeto.getNomeProduto());
+            stmt.setString(2, objeto.getDescricaoProduto());
+            stmt.setInt(3, objeto.getQuantidade());
+            stmt.setBigDecimal(4, objeto.getPrecoProduto());
+            stmt.setTimestamp(5, Timestamp.valueOf(objeto.getDataDeAtualizacao().atStartOfDay()));
+            stmt.setString(6, objeto.getCategoria());
+            stmt.setTimestamp(7, Timestamp.valueOf(objeto.getDataDeValidade().atStartOfDay()));
             
             stmt.execute();
-            stmt.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
