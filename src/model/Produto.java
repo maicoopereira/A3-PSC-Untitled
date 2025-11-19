@@ -1,67 +1,48 @@
 package model;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+
 import DAO.EstoqueDAO;
+import java.time.LocalDate;
+import java.math.BigDecimal;
+
+
 
 public class Produto {
-    private int id;
-    private String nome;
-    private String descricaoProduto;
-    private int quantidade;
-    private BigDecimal preco;
-    private LocalDate dataCadastro;
-    private LocalDate dataAtualizacao;
-    private LocalDate dataValidade;
-    private String categoria;
-
-    //estanciar produto da interface
-public Produto(String nome, String descricaoProduto, String preco,
-    LocalDate dataValidade, String categoria) {
-    this.id = EstoqueDAO.maiorID();
-    this.nome = nome;
-    this.descricaoProduto = descricaoProduto;
-    this.preco = convertePreco(preco);
-    this.dataCadastro = LocalDate.now();
-    this.dataAtualizacao = LocalDate.now();
-    this.dataValidade = dataValidade;
-    this.categoria = categoria;
-    }
-
-    public Produto(int id, String nome, String descricaoProduto, int quantidade, BigDecimal preco, LocalDate dataCadastro, LocalDate dataAtualizacao, LocalDate dataValidade, String categoria) {
-        this.id = id;
-        this.nome = nome;
-        this.descricaoProduto = descricaoProduto;
+    int idProdutos, quantidade;
+    String nomeProduto, descricaoProduto, categoria;
+    BigDecimal precoProduto;
+    LocalDate dataDeCadastro, dataDeAtualizacao, dataDeValidade;
+    
+    
+    public Produto(int quantidade, String nomeProduto, String descricaoProduto, String categoria, String precoProduto, String dataDeValidade) {
+        //Construtor usado para interface;
+        this.idProdutos = EstoqueDAO.maiorID();
         this.quantidade = quantidade;
-        this.preco = preco;
-        this.dataCadastro = dataCadastro;
-        this.dataAtualizacao = dataAtualizacao;
-        this.dataValidade = dataValidade;
+        this.nomeProduto = nomeProduto;
+        this.descricaoProduto = descricaoProduto; 
         this.categoria = categoria;
+        this.precoProduto = convertPrecoProduto(precoProduto);
+        this.dataDeCadastro = LocalDate.now();
+        this.dataDeAtualizacao = LocalDate.now();
+        this.dataDeValidade = Data.setDate(dataDeValidade);
     }
     
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = EstoqueDAO.maiorID();
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getDescricaoProduto() {
-        return descricaoProduto;
-    }
-
-    public void setDescricaoProduto(String descricaoProduto) {
+    public Produto(int idProdutos, int quantidade, String nomeProduto, String descricaoProduto, String categoria, BigDecimal precoProduto, LocalDate dataDeCadastro, LocalDate dataDeAtualizacao, LocalDate dataDeValidade) {
+        //construtor exclusivo para montar lista DAO;
+        this.idProdutos = idProdutos;
+        this.quantidade = quantidade;
+        this.nomeProduto = nomeProduto;
         this.descricaoProduto = descricaoProduto;
+        this.categoria = categoria;
+        this.precoProduto = precoProduto;
+        this.dataDeCadastro = dataDeCadastro;
+        this.dataDeAtualizacao = dataDeAtualizacao;
+        this.dataDeValidade = dataDeValidade;
+    }
+    
+    public int getIdProdutos() {
+        return idProdutos;
+
     }
 
     public int getQuantidade() {
@@ -72,32 +53,20 @@ public Produto(String nome, String descricaoProduto, String preco,
         this.quantidade = quantidade;
     }
 
-    public BigDecimal getPreco() {
-        return preco;
+    public String getNomeProduto() {
+        return nomeProduto;
     }
 
-    public void setPreco(BigDecimal preco) {
-        this.preco = preco;
+    public void setNomeProduto(String nomeProduto) {
+        this.nomeProduto = nomeProduto;
     }
 
-    public LocalDate getDataCadastro() {
-        return dataCadastro;
+    public String getDescricaoProduto() {
+        return descricaoProduto;
     }
 
-    public LocalDate getDataAtualizacao() {
-        return dataAtualizacao;
-    }
-
-    public void setDataAtualizacao(LocalDate dataAtualizacao) {
-        this.dataAtualizacao = dataAtualizacao;
-    }
-
-    public LocalDate getDataValidade() {
-        return dataValidade;
-    }
-
-    public void setDataValidade(LocalDate dataValidade) {
-        this.dataValidade = dataValidade;
+    public void setDescricaoProduto(String descricaoProduto) {
+        this.descricaoProduto = descricaoProduto;
     }
 
     public String getCategoria() {
@@ -107,26 +76,40 @@ public Produto(String nome, String descricaoProduto, String preco,
     public void setCategoria(String categoria) {
         this.categoria = categoria;
     }
+
+    public BigDecimal getPrecoProduto() {
+        return precoProduto;
+    }
+
+    public void setPrecoProduto(String precoProduto) {
+        this.precoProduto = convertPrecoProduto(precoProduto);
+    }
+
+    public LocalDate getDataDeCadastro() {
+        return dataDeCadastro;
+    }
+
+    public LocalDate getDataDeAtualizacao() {
+        return dataDeAtualizacao;
+    }
+
+    public void setDataDeAtualizacao() {
+        this.dataDeAtualizacao = LocalDate.now();
+    }
+
+    public LocalDate getDataDeValidade() {
+        return dataDeValidade;
+    }
+
+    public void setDataDeValidade(String dataDeValidade) {
+        this.dataDeValidade = Data.setDate(dataDeValidade);
+    }
+        
+    public final BigDecimal convertPrecoProduto(String precoProduto) {
+        String cleanString = precoProduto.replace(",", ".");
+        BigDecimal precoBigDecimal = new BigDecimal(cleanString);
+        return precoBigDecimal;
+    }
     
-    public void adicionarEstoque (int quant) {
-        if (quant > 0) {
-            this.quantidade += quant;
-        this.dataAtualizacao = LocalDate.now();
-        }
-    }
-    public void removerEstoque (int quant) {
-        if ( quant <= 0) {
-            return;
-        }
-        if (quant > this.quantidade) {
-            return;
-        }
-        this.quantidade -= quant;
-        this.dataAtualizacao = LocalDate.now();
-    }
-    public BigDecimal convertePreco(String precoString){
-        String cleanString = precoString.replace(",", ".");
-        BigDecimal precoConvertido = new BigDecimal(cleanString);
-        return precoConvertido;
-    }
 }
+

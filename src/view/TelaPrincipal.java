@@ -28,7 +28,38 @@ public class TelaPrincipal extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        novoProduto = new javax.swing.JMenuItem();
+        acessarEstoque = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jMenu1.setText("Arquivo");
+
+        novoProduto.setLabel("Novo Produto...");
+        novoProduto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                novoProdutoActionPerformed(evt);
+            }
+        });
+        jMenu1.add(novoProduto);
+
+        acessarEstoque.setLabel("Acessar Estoque");
+        acessarEstoque.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                acessarEstoqueActionPerformed(evt);
+            }
+        });
+        jMenu1.add(acessarEstoque);
+
+        jMenuBar1.add(jMenu1);
+
+        jMenu2.setText("Relatorios");
+        jMenuBar1.add(jMenu2);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -38,11 +69,23 @@ public class TelaPrincipal extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGap(0, 276, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void novoProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_novoProdutoActionPerformed
+        CadastroProduto telaDeCadastro = new CadastroProduto();
+        telaDeCadastro.setVisible(true);
+        
+        
+    }//GEN-LAST:event_novoProdutoActionPerformed
+
+    private void acessarEstoqueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acessarEstoqueActionPerformed
+        AcessarEstoque telaDeEstoque = new AcessarEstoque();
+        telaDeEstoque.setVisible(true);
+    }//GEN-LAST:event_acessarEstoqueActionPerformed
 
     /**
      * @param args the command line arguments
@@ -70,5 +113,10 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem acessarEstoque;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem novoProduto;
     // End of variables declaration//GEN-END:variables
 }
