@@ -146,10 +146,9 @@ public class EstoqueDAO {
 
 
 
-//update method
-    public static void atualizarDados(Produto objeto) {
-
-    String sql = "UPDATE produtos SET nomeproduto = ?, descricaoproduto = ?, quantidade = ?, precoproduto = ?, datadeatualizacao = ?, categoria = ?, datadevalidade = ? WHERE ProdutoId = ?";
+//update method - CORRIGIDO
+public static boolean atualizarDados(Produto objeto) {
+    String sql = "UPDATE produtos SET nomeproduto = ?, descricaoproduto = ?, quantidade = ?, precoproduto = ?, datadeatualizacao = ?, categoria = ?, datadevalidade = ? WHERE idprodutos = ?";
 
     try (Connection conn = DataBaseConnection.getConnection();
          PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -161,13 +160,17 @@ public class EstoqueDAO {
         stmt.setTimestamp(5, Timestamp.valueOf(objeto.getDataDeAtualizacao().atStartOfDay()));
         stmt.setString(6, objeto.getCategoria());
         stmt.setTimestamp(7, Timestamp.valueOf(objeto.getDataDeValidade().atStartOfDay()));
+        stmt.setInt(8, objeto.getIdProdutos()); // <--- ID no WHERE
 
-        stmt.execute();
+        int affected = stmt.executeUpdate();
+        return affected > 0;
 
     } catch (SQLException e) {
         e.printStackTrace();
+        return false;
     }
 }
+
     //  SELECT * FROM products ORDER BY price DESC;
     public static ArrayList gerarListaMaioresPrecos(){
 

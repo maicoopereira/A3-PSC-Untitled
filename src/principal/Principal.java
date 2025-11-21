@@ -2,7 +2,6 @@ package principal;
 import model.Produto;
 import DAO.EstoqueDAO;
 import java.time.LocalDate;
-import view.TelaPrincipal;
 
 public class Principal {
 
