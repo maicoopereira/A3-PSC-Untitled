@@ -3,14 +3,15 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/maicopereira/PSC/A3-PSC-Untitled/src/DAO/EstoqueDAO.java</file>
-            <file>file:/Users/maicopereira/PSC/A3-PSC-Untitled/src/principal/Principal.java</file>
-            <file>file:/Users/maicopereira/PSC/A3-PSC-Untitled/src/DAO/DataBaseConnection.java</file>
-            <file>file:/Users/maicopereira/PSC/A3-PSC-Untitled/src/model/Produto.java</file>
-            <file>file:/Users/maicopereira/PSC/A3-PSC-Untitled/src/view/TelaPrincipal.java</file>
-            <file>file:/Users/maicopereira/PSC/A3-PSC-Untitled/src/view/CadastroProduto.java</file>
-            <file>file:/Users/maicopereira/PSC/A3-PSC-Untitled/src/view/AcessarEstoque.java</file>
-            <file>file:/Users/maicopereira/PSC/A3-PSC-Untitled/src/model/Data.java</file>
+            <file>file:/Users/maicopereira/testes_git/A3-PSC-Untitled/src/principal/Principal.java</file>
+            <file>file:/Users/maicopereira/testes_git/A3-PSC-Untitled/src/view/Main.java</file>
+            <file>file:/Users/maicopereira/testes_git/A3-PSC-Untitled/src/view/TelaProdutos.java</file>
+            <file>file:/Users/maicopereira/testes_git/A3-PSC-Untitled/src/view/TelaCadastroProduto.java</file>
+            <file>file:/Users/maicopereira/testes_git/A3-PSC-Untitled/src/model/Produto.java</file>
+            <file>file:/Users/maicopereira/testes_git/A3-PSC-Untitled/src/DAO/EstoqueDAO.java</file>
+            <file>file:/Users/maicopereira/testes_git/A3-PSC-Untitled/src/model/Data.java</file>
+            <file>file:/Users/maicopereira/testes_git/A3-PSC-Untitled/src/DAO/DataBaseConnection.java</file>
+            <file>file:/Users/maicopereira/testes_git/A3-PSC-Untitled/src/view/RoundedButton.java</file>
         </group>
     </open-files>
 </project-private>
