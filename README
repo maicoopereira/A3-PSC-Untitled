@@ -1,6 +1,6 @@
-# A3-PSC-Untitled
+#A3-PSC-Untitled
 
-## Sobre o Projeto
+##Sobre o Projeto
 A3-PSC-Untitled é um programa desenvolvido como parte da disciplina **Programação de Soluções Computacionais (PSC) da UNISUL**.  
 O objetivo deste projeto é demonstrar a aplicação prática dos conteúdos da disciplina, incluindo:
 
@@ -14,7 +14,7 @@ O objetivo deste projeto é demonstrar a aplicação prática dos conteúdos da 
 
 ---
 
-## ✨ Funcionalidades
+##Funcionalidades
 - Execução das rotinas propostas na atividade A3;  
 - Código organizado de forma modular;  
 - Tratamento básico de entrada e saída;  
@@ -24,7 +24,7 @@ O objetivo deste projeto é demonstrar a aplicação prática dos conteúdos da 
 
 ---
 
-##  Estrutura do Projeto
+##Estrutura do Projeto
 /A3-PSC-Untitled
   ├─ src/            ← código-fonte  
   ├─ build/          ← arquivos gerados na compilação  
@@ -34,12 +34,12 @@ O objetivo deste projeto é demonstrar a aplicação prática dos conteúdos da 
 
 ---
 
-##  Como Compilar e Executar
+##Como Compilar e Executar
 
-### Pré-requisitos
+###Pré-requisitos
 - **Java** instalado (versão usada na disciplina ou superior).
 
-### Passo a passo
+###Passo a passo
 1. Clone o repositório:
    ```bash
    git clone https://github.com/maicoopereira/A3-PSC-Untitled.git
