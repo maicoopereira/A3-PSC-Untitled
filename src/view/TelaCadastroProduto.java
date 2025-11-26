@@ -20,6 +20,7 @@ public class TelaCadastroProduto extends JFrame {
     private JTextField txtPreco;
     private JTextField txtValidade;
     private JTextArea txtDescricao;
+    private RoundedButton btnAdicionar;
 
     private boolean editMode = false;
     private Produto produtoEditando = null;
@@ -97,7 +98,7 @@ public class TelaCadastroProduto extends JFrame {
         txtValidade = criarCampo(40, 410, 380);
         card.add(txtValidade);
 
-        JButton btnSalvar = new JButton(produto == null ? "Salvar Produto" : "Salvar Alterações");
+        RoundedButton btnSalvar = new RoundedButton("Salvar Produto", new Color(46, 204, 113));
         btnSalvar.setBounds(140, 455, 180, 30);
         btnSalvar.setBackground(new Color(46, 204, 113));
         btnSalvar.setForeground(Color.WHITE);

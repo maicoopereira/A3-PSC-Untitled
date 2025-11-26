@@ -17,7 +17,7 @@ public class Data {
         DateTimeFormatter formatador;
 
         // Detecta automaticamente o formato
-        if (Character.isDigit(data.charAt(4)) && data.charAt(4) == '-') {
+        if (data.charAt(4) == '-') {
             // Formato yyyy-M-d
             formatador = DateTimeFormatter.ofPattern("yyyy-M-d");
         } else {

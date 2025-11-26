@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.List;
+import view.RoundedButton;
 
 public class TelaProdutos extends JFrame {
 
@@ -104,7 +105,7 @@ public class TelaProdutos extends JFrame {
         tabela = new JTable(modeloTabela);
         tabela.setRowHeight(42);
         tabela.setShowGrid(false);
-        tabela.getTableHeader().setReorderingAllowed(false);
+        tabela.getTableHeader().setReorderingAllowed(true);
         tabela.getTableHeader().setPreferredSize(new Dimension(tabela.getWidth(), 42));
         tabela.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 13));
         tabela.getTableHeader().setBackground(new Color(245, 245, 245));
@@ -501,27 +502,27 @@ public class TelaProdutos extends JFrame {
         }
     }
 
-    // Botão arredondado
-    class RoundedButton extends JButton {
-        private final Color bg;
-        RoundedButton(String text, Color bg) {
-            super(text);
-            this.bg = bg;
-            setForeground(Color.WHITE);
-            setFocusPainted(false);
-            setBorderPainted(false);
-            setContentAreaFilled(false);
-        }
-        @Override
-        protected void paintComponent(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setColor(bg);
-            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 18, 18);
-            g2.dispose();
-            super.paintComponent(g);
-        }
-    }
+//    // Botão arredondado
+//    class RoundedButton extends JButton {
+//        private final Color bg;
+//        RoundedButton(String text, Color bg) {
+//            super(text);
+//            this.bg = bg;
+//            setForeground(Color.WHITE);
+//            setFocusPainted(false);
+//            setBorderPainted(false);
+//            setContentAreaFilled(false);
+//        }
+//        @Override
+//        protected void paintComponent(Graphics g) {
+//            Graphics2D g2 = (Graphics2D) g.create();
+//            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+//            g2.setColor(bg);
+//            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 18, 18);
+//            g2.dispose();
+//            super.paintComponent(g);
+//        }
+//    }
 
     /* ---------- Renderers / Editors ---------- */
 
