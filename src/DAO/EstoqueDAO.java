@@ -128,9 +128,9 @@ public class EstoqueDAO {
                 BigDecimal preco = result.getBigDecimal("precoproduto");
                 Date dataDeCadastroDate = result.getDate("datadecadastro"); //get a date from the mySQL db
                 LocalDate dataDeCadastro = dataDeCadastroDate.toLocalDate(); //convert to LocalDate to code
-                Date dataDeAtualizacaoDate = result.getDate("datadecadastro"); //get a date from the mySQL db
+                Date dataDeAtualizacaoDate = result.getDate("datadeatualizacao"); //get a date from the mySQL db
                 LocalDate dataDeAtualizacao = dataDeAtualizacaoDate.toLocalDate(); //convert to LocalDate to code
-                Date dataDeValidadeDate = result.getDate("datadecadastro"); //get a date from the mySQL db
+                Date dataDeValidadeDate = result.getDate("datadevalidade"); //get a date from the mySQL db
                 LocalDate dataDeValidade = dataDeValidadeDate.toLocalDate(); //convert to LocalDate to code
 
                 Produto novoProduto = new Produto(id, quantidade, nome, descricao, categoria, preco, dataDeCadastro, dataDeAtualizacao, dataDeValidade);
