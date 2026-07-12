@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 
 public class EstoqueDAO {
-    public static ArrayList<Produto> estoqueLista = new ArrayList<>();
+    //public static ArrayList<Produto> estoqueLista = new ArrayList<>();
     
     
     //methods
@@ -109,33 +109,18 @@ public class EstoqueDAO {
         
         }
     
-    //read method
-    public static ArrayList gerarLista(){
+    //read method, cria uma lista local, dentro da propria função, para evitar problemas de concorrência e inconsistência de dados.
+    public static ArrayList<Produto> gerarLista(){
 
-        String sql = "SELECT * FROM produtos";
-        estoqueLista.clear();
-
+        String sql = "SELECT * FROM produtos"; 
+        ArrayList<Produto> estoqueLista = new ArrayList<>();
         try(Connection conn = DataBaseConnection.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql);
             ResultSet result = stmt.executeQuery(sql)) {
 
             while (result.next()){
-                int id = result.getInt("idprodutos");
-                String nome = result.getString("nomeproduto");
-                String descricao = result.getString("descricaoproduto");
-                String categoria = result.getString("categoria");
-                int quantidade = result.getInt("quantidade");
-                BigDecimal preco = result.getBigDecimal("precoproduto");
-                Date dataDeCadastroDate = result.getDate("datadecadastro"); //get a date from the mySQL db
-                LocalDate dataDeCadastro = dataDeCadastroDate.toLocalDate(); //convert to LocalDate to code
-                Date dataDeAtualizacaoDate = result.getDate("datadeatualizacao"); //get a date from the mySQL db
-                LocalDate dataDeAtualizacao = dataDeAtualizacaoDate.toLocalDate(); //convert to LocalDate to code
-                Date dataDeValidadeDate = result.getDate("datadevalidade"); //get a date from the mySQL db
-                LocalDate dataDeValidade = dataDeValidadeDate.toLocalDate(); //convert to LocalDate to code
-
-                Produto novoProduto = new Produto(id, quantidade, nome, descricao, categoria, preco, dataDeCadastro, dataDeAtualizacao, dataDeValidade);
-
-                estoqueLista.add(novoProduto);                   
+                Produto novoProduto = mapearProduto(result);
+                estoqueLista.add(novoProduto);                 
             }
 
         }catch (SQLException e){
@@ -172,31 +157,17 @@ public static boolean atualizarDados(Produto objeto) {
 }
 
     //  SELECT * FROM products ORDER BY price DESC;
-    public static ArrayList gerarListaMaioresPrecos(){
+    public static ArrayList<Produto> gerarListaMaioresPrecos(){
 
         String sql = "SELECT * FROM produtos ORDER BY precoproduto DESC";
-        estoqueLista.clear();
+        ArrayList<Produto> estoqueLista = new ArrayList<>();
 
         try(Connection conn = DataBaseConnection.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql);
             ResultSet result = stmt.executeQuery()) {
 
             while (result.next()){
-                int id = result.getInt("idprodutos");
-                String nome = result.getString("nomeproduto");
-                String descricao = result.getString("descricaoproduto");
-                String categoria = result.getString("categoria");
-                int quantidade = result.getInt("quantidade");
-                BigDecimal preco = result.getBigDecimal("precoproduto");
-                Date dataDeCadastroDate = result.getDate("datadecadastro"); //get a date from the mySQL db
-                LocalDate dataDeCadastro = dataDeCadastroDate.toLocalDate(); //convert to LocalDate to code
-                Date dataDeAtualizacaoDate = result.getDate("datadecadastro"); //get a date from the mySQL db
-                LocalDate dataDeAtualizacao = dataDeAtualizacaoDate.toLocalDate(); //convert to LocalDate to code
-                Date dataDeValidadeDate = result.getDate("datadecadastro"); //get a date from the mySQL db
-                LocalDate dataDeValidade = dataDeValidadeDate.toLocalDate(); //convert to LocalDate to code
-
-                Produto novoProduto = new Produto(id, quantidade, nome, descricao, categoria, preco, dataDeCadastro, dataDeAtualizacao, dataDeValidade);
-
+                Produto novoProduto = mapearProduto(result);
                 estoqueLista.add(novoProduto);                   
             }
 
@@ -206,98 +177,68 @@ public static boolean atualizarDados(Produto objeto) {
         return estoqueLista;
     }
     
-    public static ArrayList gerarListaMaioresPrecos(BigDecimal precoDeCorte){
+    public static ArrayList<Produto> gerarListaMaioresPrecos(BigDecimal precoDeCorte){
 
-        String sql = "SELECT * FROM produtos WHERE precoproduto >= " + precoDeCorte + " ORDER BY precoproduto DESC";
-        estoqueLista.clear();
+        String sql = "SELECT * FROM produtos WHERE precoproduto >= ? ORDER BY precoproduto DESC";
+        ArrayList<Produto> estoqueLista = new ArrayList<>();
 
         try(Connection conn = DataBaseConnection.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            ResultSet result = stmt.executeQuery()) {
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setBigDecimal(1, precoDeCorte);
+                try (ResultSet result = stmt.executeQuery()) {
 
-            while (result.next()){
-                int id = result.getInt("idprodutos");
-                String nome = result.getString("nomeproduto");
-                String descricao = result.getString("descricaoproduto");
-                String categoria = result.getString("categoria");
-                int quantidade = result.getInt("quantidade");
-                BigDecimal preco = result.getBigDecimal("precoproduto");
-                Date dataDeCadastroDate = result.getDate("datadecadastro"); //get a date from the mySQL db
-                LocalDate dataDeCadastro = dataDeCadastroDate.toLocalDate(); //convert to LocalDate to code
-                Date dataDeAtualizacaoDate = result.getDate("datadecadastro"); //get a date from the mySQL db
-                LocalDate dataDeAtualizacao = dataDeAtualizacaoDate.toLocalDate(); //convert to LocalDate to code
-                Date dataDeValidadeDate = result.getDate("datadecadastro"); //get a date from the mySQL db
-                LocalDate dataDeValidade = dataDeValidadeDate.toLocalDate(); //convert to LocalDate to code
+                    while (result.next()){
+                        Produto novoProduto = mapearProduto(result);
+                        estoqueLista.add(novoProduto);                    
+                    }
 
-                Produto novoProduto = new Produto(id, quantidade, nome, descricao, categoria, preco, dataDeCadastro, dataDeAtualizacao, dataDeValidade);
+                } catch (SQLException e) {
+                    e.getMessage();
+                }
+        } catch (SQLException e) {
+            e.getMessage();
+        }
+            
+            
+        return estoqueLista;
+    }
+    public static ArrayList<Produto> gerarListaMaioresPrecos(int totalDeProdutos){
 
-                estoqueLista.add(novoProduto);                   
+        String sql = "SELECT * FROM produtos ORDER BY precoproduto DESC LIMIT ?";
+        ArrayList<Produto> estoqueLista = new ArrayList<>();
+        
+        try(Connection conn = DataBaseConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);) {
+            stmt.setInt(1, totalDeProdutos);
+            
+            try(ResultSet result = stmt.executeQuery()) {
+
+                while (result.next()){
+                    Produto novoProduto = mapearProduto(result);
+                    estoqueLista.add(novoProduto);                    
+                }
+
+            } catch (SQLException e){
+                e.getMessage();
             }
-
-        }catch (SQLException e){
+        } catch (SQLException e) {
             e.getMessage();
         }
         return estoqueLista;
     }
-    public static ArrayList gerarListaMaioresPrecos(int totalDeProdutos){
 
-        String sql = "SELECT * FROM produtos ORDER BY precoproduto DESC LIMIT " + totalDeProdutos;
-        estoqueLista.clear();
 
-        try(Connection conn = DataBaseConnection.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            ResultSet result = stmt.executeQuery()) {
-
-            while (result.next()){
-                int id = result.getInt("idprodutos");
-                String nome = result.getString("nomeproduto");
-                String descricao = result.getString("descricaoproduto");
-                String categoria = result.getString("categoria");
-                int quantidade = result.getInt("quantidade");
-                BigDecimal preco = result.getBigDecimal("precoproduto");
-                Date dataDeCadastroDate = result.getDate("datadecadastro"); //get a date from the mySQL db
-                LocalDate dataDeCadastro = dataDeCadastroDate.toLocalDate(); //convert to LocalDate to code
-                Date dataDeAtualizacaoDate = result.getDate("datadecadastro"); //get a date from the mySQL db
-                LocalDate dataDeAtualizacao = dataDeAtualizacaoDate.toLocalDate(); //convert to LocalDate to code
-                Date dataDeValidadeDate = result.getDate("datadecadastro"); //get a date from the mySQL db
-                LocalDate dataDeValidade = dataDeValidadeDate.toLocalDate(); //convert to LocalDate to code
-
-                Produto novoProduto = new Produto(id, quantidade, nome, descricao, categoria, preco, dataDeCadastro, dataDeAtualizacao, dataDeValidade);
-
-                estoqueLista.add(novoProduto);                   
-            }
-
-        }catch (SQLException e){
-            e.getMessage();
-        }
-        return estoqueLista;
-    }
-    
-    public static ArrayList gerarListaDezMaioresPrecos(){
+    public static ArrayList<Produto> gerarListaDezMaioresPrecos(){
 
         String sql = "SELECT * FROM produtos ORDER BY precoproduto DESC LIMIT 10";
-        estoqueLista.clear();
+        ArrayList<Produto> estoqueLista = new ArrayList<>();
 
         try(Connection conn = DataBaseConnection.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql);
             ResultSet result = stmt.executeQuery()) {
 
             while (result.next()){
-                int id = result.getInt("idprodutos");
-                String nome = result.getString("nomeproduto");
-                String descricao = result.getString("descricaoproduto");
-                String categoria = result.getString("categoria");
-                int quantidade = result.getInt("quantidade");
-                BigDecimal preco = result.getBigDecimal("precoproduto");
-                Date dataDeCadastroDate = result.getDate("datadecadastro"); //get a date from the mySQL db
-                LocalDate dataDeCadastro = dataDeCadastroDate.toLocalDate(); //convert to LocalDate to code
-                Date dataDeAtualizacaoDate = result.getDate("datadecadastro"); //get a date from the mySQL db
-                LocalDate dataDeAtualizacao = dataDeAtualizacaoDate.toLocalDate(); //convert to LocalDate to code
-                Date dataDeValidadeDate = result.getDate("datadecadastro"); //get a date from the mySQL db
-                LocalDate dataDeValidade = dataDeValidadeDate.toLocalDate(); //convert to LocalDate to code
-
-                Produto novoProduto = new Produto(id, quantidade, nome, descricao, categoria, preco, dataDeCadastro, dataDeAtualizacao, dataDeValidade);
-
+                Produto novoProduto = mapearProduto(result);
                 estoqueLista.add(novoProduto);                   
             }
 
@@ -308,41 +249,50 @@ public static boolean atualizarDados(Produto objeto) {
     }
     
         //  SELECT * FROM products ORDER BY price ASC;
-    public static ArrayList gerarListaMenoresPrecos(){
-
+    public static ArrayList<Produto> gerarListaMenoresPrecos(){
         String sql = "SELECT * FROM produtos ORDER BY precoproduto ASC";
-        estoqueLista.clear();
-
+        ArrayList<Produto> estoqueLista = new ArrayList<>();
         try(Connection conn = DataBaseConnection.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql);
             ResultSet result = stmt.executeQuery()) {
-
-            while (result.next()){
-                int id = result.getInt("idprodutos");
-                String nome = result.getString("nomeproduto");
-                String descricao = result.getString("descricaoproduto");
-                String categoria = result.getString("categoria");
-                int quantidade = result.getInt("quantidade");
-                BigDecimal preco = result.getBigDecimal("precoproduto");
-                Date dataDeCadastroDate = result.getDate("datadecadastro"); //get a date from the mySQL db
-                LocalDate dataDeCadastro = dataDeCadastroDate.toLocalDate(); //convert to LocalDate to code
-                Date dataDeAtualizacaoDate = result.getDate("datadecadastro"); //get a date from the mySQL db
-                LocalDate dataDeAtualizacao = dataDeAtualizacaoDate.toLocalDate(); //convert to LocalDate to code
-                Date dataDeValidadeDate = result.getDate("datadecadastro"); //get a date from the mySQL db
-                LocalDate dataDeValidade = dataDeValidadeDate.toLocalDate(); //convert to LocalDate to code
-
-                Produto novoProduto = new Produto(id, quantidade, nome, descricao, categoria, preco, dataDeCadastro, dataDeAtualizacao, dataDeValidade);
-
-                estoqueLista.add(novoProduto);                   
+            
+                while (result.next()){
+                    Produto novoProduto = mapearProduto(result);
+                    estoqueLista.add(novoProduto);                   
+                }
+            
+            }catch (SQLException e){
+                e.getMessage();
             }
-
-        }catch (SQLException e){
-            e.getMessage();
-        }
         return estoqueLista;
     }
 
+    //Metodo padrao de gerar novo produto a partir do ResultSet, para evitar repeticao de codigo.
+    private static Produto mapearProduto(ResultSet result) throws SQLException {
+        try {
+            if (result == null) {
+                throw new SQLException("ResultSet is null");
+            }
+        } catch (SQLException e) {
+            e.getMessage();
+        }
+        int id = result.getInt("idprodutos");
+        String nome = result.getString("nomeproduto");
+        String descricao = result.getString("descricaoproduto");
+        String categoria = result.getString("categoria");
+        int quantidade = result.getInt("quantidade");
+        BigDecimal preco = result.getBigDecimal("precoproduto");
+        Date dataDeCadastroDate = result.getDate("datadecadastro"); //get a date from the mySQL db
+        LocalDate dataDeCadastro = dataDeCadastroDate.toLocalDate(); //convert to LocalDate to code
+        Date dataDeAtualizacaoDate = result.getDate("datadeatualizacao"); //get a date from the mySQL db
+        LocalDate dataDeAtualizacao = dataDeAtualizacaoDate.toLocalDate(); //convert to LocalDate to code
+        Date dataDeValidadeDate = result.getDate("datadevalidade"); //get a date from the mySQL db
+        LocalDate dataDeValidade = dataDeValidadeDate.toLocalDate(); //convert to LocalDate to code
 
+        Produto novoProduto = new Produto(id, quantidade, nome, descricao, categoria, preco, dataDeCadastro, dataDeAtualizacao, dataDeValidade);
+            
+        return novoProduto;
+    }
 //  SELECT * FROM products ORDER BY price ASC;
 
     
